@@ -1,0 +1,15 @@
+torch~=2.1.0
+torchvision~=0.16.0
+timm~=0.5.4
+tqdm
+opencv-python
+scikit-learn
+numpy
+matplotlib
+seaborn
+pandas
+kornia
+pytorch_memlab
+pyyaml
+wandb
+Flask>=2.2.2
