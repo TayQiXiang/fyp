@@ -1,7 +1,7 @@
 ## Initialisation
 ```bash
 source activate fast-image-retrieval
-cd FIRe
+cd cisip-FIRe
 ./init.sh
 ```
 Refer to import_data.ipynb for training and inferencing.
