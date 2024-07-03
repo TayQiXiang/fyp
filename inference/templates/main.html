@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Vitrox Image Retrieval</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+  <!-- Icons -->
+  <link href="{{url_for('static', filename='assets/js/plugins/nucleo/css/nucleo.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='assets/js/plugins/@fortawesome/fontawesome-free/css/all.min.css')}}" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="{{url_for('static', filename='assets/css/argon-dashboard.css')}}" rel="stylesheet" />
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+  <style>.copyleft {display:inline-block; transform: rotate(180deg);}</style>
+</head>
+
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+{% if "successfully" in messages[0] %}
+{% else %}
+<p>
+<div class="alert alert-warning" role="alert">{{ messages[0] }}</div>
+</p>
+{% endif %}
+{% endif %}
+{% endwith %}
+
+{% block content %}
+<body class="">
+  <div class="main-content">
+    <!-- Navbar -->
+    <nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
+      <div class="container-fluid">
+        <!-- Brand -->
+        <span class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block"><a href="/" class="mb-0 text-sm font-weight-bold text-white">Vitrox Image Retrieval</a></span>
+        <div class="media align-items-center">
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    <!-- Header  bg-gradient-primary -->
+    <div class="header pb-8 pt-5 pt-md-8" style="background: linear-gradient(to right, rgba(240,147,251,0.5), rgba(245,87,108,0.5))">
+      <div class="container-fluid">
+        <div class="header-body">
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid mt--7">
+      <div class="row">
+        <!-- pick picture -->
+        <div class="col-xl-4">
+          <div class="card shadow">
+            <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-uppercase text-muted ls-1 mb-1"><i class="ni ni-folder-17"></i> Upload</h6>
+                  <h2 class="mb-0">
+                    {% if page_status == 2 %}
+                      Pick Your Picture
+                    {% else %}
+                      Your Picture
+                    {% endif %}
+                    </h2>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="box-body">
+                <div class="form-group">
+                  <form action="" method="POST" enctype="multipart/form-data">
+                  <div class="text-center">
+                    {% if page_status == 2 %}
+                      <input type="file" required name="image" accept="image/*" style="margin-bottom: 30px; margin-top: 20px;">
+                      <button type="submit" class="btn btn-primary my-4" value="Submit"><i class="ni ni-send"></i> Find Image</button>
+                      
+                      <button type="reset"  class="btn btn-danger my-4" value="Reset"><i class="ni ni-fat-remove"></i> Reset</button>
+                    {% else %}
+                    <div class="row">
+                      <div class="col-xl-12">
+                        <img class="img-fluid" src="data:image/jpeg;base64,{{ query_img }}">
+                    </div>
+                    </div>
+
+                      <a href="/" class="btn btn-primary my-4"><span class=reload>&#x21bb;</span> Find Again</a>
+                    {% endif %}
+                </div>
+                </form>
+                </div>
+              </div>
+            </form>
+            </div>
+          </div><br>
+          <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body shadow">
+                  <div class="row">
+                    <div class="col ">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Curent Datasets</h5>
+                      <span class="h2 font-weight-bold mb-0">{{ count }} Images from {{class_count}} Different Models</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-info text-white rounded-circle shadow">
+                        <i class="fas fa-chart-bar"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% if page_status == 1 %}
+              <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Minimum Distance</h5>
+                        
+                        
+                      <span class="h2 font-weight-bold mb-0">
+                          {{min_dist}}
+                          
+                      </span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-success text-white rounded-circle shadow">
+                        <i class="ni ni-chart-bar-32"></i>
+                      </div>
+                    </div>
+                  </div>
+                    <!-- <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Confidence Score</h5>
+                        
+                        
+                      <span class="h2 font-weight-bold mb-0">
+                          xxx
+                          
+                      </span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-success text-white rounded-circle shadow">
+                        <i class="ni ni-chart-bar-32"></i>
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+              {% endif %}
+        </div>
+
+        <!--end of pick picture -->
+
+        <div class="col-xl-8 mb-5 mb-xl-0">
+          <div class="card bg-gradient-default shadow">
+            <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-uppercase text-light ls-1 mb-2"><i class="ni ni-tv-2"></i> Result</h6>
+                  <h2 class="text-white mb-0">Search Result</h2>
+                </div>
+              </div>
+            </div>
+            <div class="card-body" {% if page_status == 2 %} style="height: 350px" {% endif %}>
+                {% if page_status == 2 %}
+                  <p class="text-white">No Image Searched<i class="ni ni-user-run"></i></p>
+                {% else %}
+                <div class="table-responsive">
+                  <div>
+                      <table class="table align-items-center table-dark">
+                          <thead class="thead-light">
+                              <tr>
+                                  <th scope="col" class="sort" data-sort="name">No</th>
+                                  <th scope="col" class="sort" data-sort="budget">Model</th>
+                          
+                                  <th scope="col" class="sort" data-sort="completion">Confidence</th>
+                                  <th scope="col"></th>
+                              </tr>
+                          </thead>
+                          <tbody class="list">
+                            
+                            {% set count = namespace(value=1) %}
+                              {% for key in results %}
+                              <tr>
+                                <td>{{ count.value }}</td>
+                                {% set count.value = count.value + 1 %}
+                                  <td class="budget">
+                                      {{key}}
+                                  </td>
+                          
+                                  <td>
+                                      <div class="d-flex align-items-center">
+                                          {% set value = results[key][1] %}
+                                          <span class="completion mr-2">({{'%0.2f'| format(value*100|float)}}%)</span>
+                                          <div>
+                                              <div class="progress">
+                                                  <div class="progress-bar {% if value<0.3 %} bg-danger {% elif value >0.7 %} bg-success {% else%} bg-info {%endif%}" 
+                                                      role="progressbar" aria-valuenow="{{value*100|round|int }}" aria-valuemin="0" aria-valuemax="100" style="width: {{'%0.2f'| format(value*100|float)}}%;"></div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  <td class="text-right">
+                                      <!-- Button trigger modal -->
+                                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{ count.value }}">
+                                        Explain <i class="ni ni-bulb-61"></i>
+                                      </button>
+
+                                      <!-- Modal -->
+                                      <div class="modal fade" id="exampleModal{{ count.value }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title" id="exampleModalLabel">Modal {{ count.value -1}}</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                            </div>
+                                            <div class="modal-body ms-auto">
+                                              <div class="justify-content-around row row-cols-auto g-4 overflow-auto">
+                                                {% for img in results[key][0] %}
+                                                <!--             mx-auto-->
+                                                <div class="col">
+                                                    <!--                <br>-->
+                                                    <div class="card text-center" style="width: 10rem;">
+                                                        <img src="{{ url_for('get_image', filename=img[1]) }}" style="height: 10rem;"
+                                                             class="card-img-top smalling" alt="...">
+                                                        <div class="card-body">
+                                                          <h5 class="card-title">Distance: {{img[0]}}</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                               
+                                            </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                  </td>
+                              </tr>
+                              
+                              
+                          </tbody>
+                          {% endfor %}
+                      </table>
+                  </div>
+                  
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+        </div>
+        {% endblock content %}
+      </div>
+      
+    </div>
+  </div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        let cropper;
+        const inputImage = document.getElementById('inputImage');
+        const image = document.getElementById('image');
+        const cropButton = document.getElementById('cropButton');
+
+        inputImage.addEventListener('change', (event) => {
+            const files = event.target.files;
+            const done = (url) => {
+                inputImage.value = '';
+                image.src = url;
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                });
+                $('#cropModal').modal('show');
+            };
+            let reader;
+            let file;
+
+            if (files && files.length > 0) {
+                file = files[0];
+                if (URL) {
+                    done(URL.createObjectURL(file));
+                } else if (FileReader) {
+                    reader = new FileReader();
+                    reader.onload = () => {
+                        done(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        cropButton.addEventListener('click', () => {
+            const canvas = cropper.getCroppedCanvas({
+                width: 256,
+                height: 256,
+            });
+
+            canvas.toBlob((blob) => {
+                const formData = new FormData();
+                formData.append('croppedImage', blob);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    $('#cropModal').modal('hide');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+    <footer class="page-footer font-small blue pt-4">
+    <!-- Copyright -->
+    <div class="footer-copyright text-center p-4 footer-text" style="background-color: rgba(255, 255, 255, 0.10);">©
+        Created by QX
+    </div>
+    <!-- Copyright -->
+</footer>
+</html>
